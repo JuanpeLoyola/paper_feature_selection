@@ -181,3 +181,5 @@ def plot_evolucion(log):
 
 if __name__ == '__main__':
     main()
+
+# %%
