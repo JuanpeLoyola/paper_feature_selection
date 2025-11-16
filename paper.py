@@ -12,41 +12,41 @@ from deap import base, creator, tools, algorithms
 
 # Librerías de Scikit-learn para el modelo wrapper y evaluación
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.model_selection import StratifiedKFold, cross_val_score
-from sklearn.metrics import precision_score
+from sklearn.model_selection import cross_val_score
 from sklearn.datasets import load_breast_cancer 
 import seaborn as sns
 
 # --- 1. Definición de Constantes y Parámetros ---
 
-# Constantes del Problema (Se deben ajustar a tu dataset)
-# Usamos el dataset de cáncer de mama de sklearn como placeholder
+# Dataset
 datos = load_breast_cancer()
 X = datos.data
 y = datos.target
+
+# Constantes del problema
 N_FEATURES = X.shape[1] # 30 features
 K_MIN = 5               # Restricción Dura: Mínimo de features seleccionados
 K_MAX = 15              # Restricción Dura: Máximo de features seleccionados
 K_FOLDS = 5             # Parámetro para la validación cruzada
 
-# Hiperparámetros del GA (Basado en la metodología solicitada)
-TAM_POBLACION = 200
-N_GENERACIONES = 50
-P_CRUCE = 0.8         # Probabilidad de Cruce (CXPB)
-P_MUTACION = 0.2      # Probabilidad de Mutación (MUTPB)
-TAM_TORNEO = 4        # Tamaño del Torneo (Selección)
+# Hiperparámetros del GA
+TAM_POBLACION = 200   # Tamaño de la Población
+N_GENERACIONES = 10   # Número de Generaciones
+P_CRUCE = 0.8         # Probabilidad de Cruce
+P_MUTACION = 0.2      # Probabilidad de Mutación
+TAM_TORNEO = 4        # Tamaño del Torneo para Selección
 
-# Random seed
+# Random seed para reproducibilidad
 random.seed(42)
 
 # --- 2. Configuración de DEAP ---
 
 # Definimos la estrategia: Maximizar la función objetivo (Peso 1.0)
 creator.create("FitnessMax", base.Fitness, weights=(1.0,))
-# Creamos el individuo (el cromosoma es una lista de genes binarios)
+# Creamos el individuo (el cromosoma es una lista de genes binarios que representan la selección de features)
 creator.create("Individuo", list, fitness=creator.FitnessMax)
 
-toolbox = base.Toolbox()
+toolbox = base.Toolbox() # Esto es para registrar los operadores genéticos
 
 # Operador para generar un gen (0 o 1)
 toolbox.register("gen_binario", random.randint, 0, 1)
@@ -73,16 +73,12 @@ def evaluar_FS(individuo, X_data, y_target, k_folds, k_min, k_max):
     # Penalización de Muerte (Death Penalty) si se viola el rango [k_min, k_max]
     if num_features < k_min or num_features > k_max:
         return 0.0, # Fitness = 0.0 (inviable)
-        
-    # Si no se seleccionó ninguna feature (aunque k_min>=1 lo cubre)
-    if num_features == 0:
-        return 0.0,
 
     # 2. Seleccionar el subconjunto de features
     indices_seleccionados = np.where(np.array(individuo) == 1)[0]
     X_subconjunto = X_data[:, indices_seleccionados]
 
-    # 3. Modelo Wrapper: Árbol de Clasificación (con hiperparámetros fijos)
+    # 3. Modelo Wrapper: Árbol de Clasificación (con hiperparámetros por defecto)
     modelo = DecisionTreeClassifier(random_state=42)
     
     # 4. Evaluación: Validación Cruzada (k-Fold)
@@ -98,17 +94,20 @@ def evaluar_FS(individuo, X_data, y_target, k_folds, k_min, k_max):
     # Devolver la Precisión promedio como la aptitud
     return np.mean(precision_scores),
 
+
 # --- 4. Registro de Operadores Genéticos ---
 
-toolbox.register("evaluate", evaluar_FS)
-# Cruce: Uniforme (tools.cxUniform) - Mayor diversidad
-toolbox.register("mate", tools.cxUniform, indpb=0.5) 
-# Mutación: Flip-Bit (tools.mutFlipBit) - Ideal para binario
-toolbox.register("mutate", tools.mutFlipBit, indpb=1.0/N_FEATURES) 
 # Selección: Torneo (Tamaño 4)
 toolbox.register("select", tools.selTournament, tournsize=TAM_TORNEO)
 
-# --- 5. Función Principal del GA (Esquema $\mu+\lambda$) ---
+# Cruce: Uniforme (tools.cxUniform) - Mayor diversidad
+toolbox.register("mate", tools.cxUniform, indpb=0.5) 
+
+# Mutación: Flip-Bit (tools.mutFlipBit) - Ideal para binario
+toolbox.register("mutate", tools.mutFlipBit, indpb=1.0/N_FEATURES) # Con esta probabilidad nos aseguramos que en promedio se muta 1 gen por individuo
+
+
+# --- 5. Función Principal del GA (Esquema MuPlusLambda) ---
 
 def main():
     
@@ -131,8 +130,9 @@ def main():
     
     print("Iniciando optimización del Feature Selection...")
 
-    # 3. Loop principal del GA (Esquema $\mu+\lambda$)
-    # Los descendientes ($\lambda$) compiten con los padres ($\mu$) por un puesto en la próxima generación.
+    # 3. Bucle principal del GA (Esquema MuPlusLambda)
+
+    # Los descendientes (Lambda) compiten con los padres (Mu) por un puesto en la próxima generación.
     pop, logbook = algorithms.eaMuPlusLambda(pop, toolbox, 
                                              MU, LAMBDA, 
                                              P_CRUCE, P_MUTACION, 
@@ -151,7 +151,7 @@ def main():
     print("\n" + "="*60)
     print("✅ Optimización del Feature Selection Completada")
     print("="*60)
-    print(f"Mejor Precisión (Aptitud): {mejor_aptitud:.4f}")
+    print(f"Mejor Precisión (Fitness): {mejor_aptitud:.4f}")
     print(f"Número de Features Seleccionadas: {len(features_seleccionadas_indices)}")
     print(f"Features Seleccionadas:")
     for i, nombre in enumerate(nombres_features):
@@ -173,7 +173,7 @@ def plot_evolucion(log):
     plt.plot(gen, fit_maxs, color='red', label='Precisión Máxima')
     plt.plot(gen, fit_ave, color='green', linestyle='--', label='Precisión Promedio')
     plt.xlabel('Generación')
-    plt.ylabel('Precisión (Aptitud)')
+    plt.ylabel('Precisión (Fitness)')
     plt.title('Evolución de la Precisión Máxima y Promedio')
     plt.legend()
     plt.grid(True)
@@ -181,4 +181,3 @@ def plot_evolucion(log):
 
 if __name__ == '__main__':
     main()
-# %%
