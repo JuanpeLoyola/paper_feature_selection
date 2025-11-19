@@ -21,11 +21,15 @@ from sklearn.datasets import fetch_openml, load_wine
 # SImpleImputer para manejar valores faltantes
 from sklearn.impute import SimpleImputer
 
+import warnings
+warnings.filterwarnings("ignore", category=RuntimeWarning, module="deap.creator")
+# Las dos líneas anteriores son para ignorar warnings molestos de DEAP sobre la creación de clases.
+
 # --- 1. Definición de Constantes y Parámetros ---
 
 # Dataset
 # Cambia esta variable para probar otro dataset: 'breast_cancer', 'wine', 'ionosphere', 'lymphography', 'zoo', 'parkinsons'
-NOMBRE_DATASET = 'breast_cancer' 
+NOMBRE_DATASET = 'zoo' 
 
 def cargar_dataset(nombre):
     print(f"📥 Cargando dataset: {nombre}...")
@@ -149,7 +153,7 @@ def evaluar_FS(individuo, X_data, y_target, k_folds, k_min, k_max):
         X_subconjunto, 
         y_target, 
         cv=K_FOLDS, 
-        scoring='precision',
+        scoring='precision_weighted', # Esto es para que funcione en clasificación multiclase. Calcula la presición ponderada dándole peso a cada clase según su frecuencia.
         error_score=0
     )
 
@@ -209,13 +213,6 @@ def main():
     # Encontrar las features seleccionadas por el mejor individuo
     features_seleccionadas_indices = np.where(np.array(mejor_individuo) == 1)[0]
     nombres_seleccionados = np.array(NOMBRES_FEATURES)[features_seleccionadas_indices] # Convertimos a array de numpy temporalmente para poder indexar con la lista de índices
-    
-    print("\n" + "="*60)
-    print("✅ Optimización del Feature Selection Completada")
-    # ... (resto de prints) ...
-    print(f"Features Seleccionadas:")
-    for i, nombre in enumerate(nombres_seleccionados): # Usamos la nueva variable
-        print(f"  {i+1}. {nombre}")
     
     print("\n" + "="*60)
     print("✅ Optimización del Feature Selection Completada")
