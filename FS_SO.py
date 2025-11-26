@@ -97,7 +97,7 @@ print(f"⚙️ Restricciones aplicadas: Min={K_MIN}, Max={K_MAX} features (de {N
 
 # Hiperparámetros del GA
 TAM_POBLACION = 200   # Tamaño de la Población
-N_GENERACIONES = 10   # Número de Generaciones
+N_GENERACIONES = 3   # Número de Generaciones
 P_CRUCE = 0.8         # Probabilidad de Cruce
 P_MUTACION = 0.2      # Probabilidad de Mutación
 TAM_TORNEO = 4        # Tamaño del Torneo para Selección
