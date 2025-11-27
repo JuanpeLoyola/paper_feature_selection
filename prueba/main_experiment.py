@@ -35,7 +35,7 @@ CONFIGURACION = {
 }
 
 # Configuración del experimento
-DATASETS = ['breast_cancer', 'wine', 'ionosphere', 'lymphography', 'zoo']
+DATASETS = ['zoo', 'wine', 'lymphography', 'ionosphere', 'breast_cancer']
 N_EJECUCIONES = 10
 ALGORITMOS = {
     'GA': run_ga,

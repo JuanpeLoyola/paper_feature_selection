@@ -38,3 +38,22 @@ class Evaluador:
         )
 
         return np.mean(precision_scores),
+
+    def evaluar_multiobjetivo(self, individuo):
+            """Para Multi Objective (NSGA-II). Retorna (Precision, Recall)"""
+            mask = np.array(individuo) == 1
+            num_features = sum(mask)
+            
+            # Hard Constraints (Tu lógica)
+            if num_features < self.k_min or num_features > self.k_max:
+                return 0.0, 0.0 # Penalización doble
+
+            indices = np.where(mask)[0]
+            X_sub = self.X[:, indices]
+
+            # 1. Precisión
+            prec_scores = cross_val_score(self.modelo, X_sub, self.y, cv=self.k_folds, scoring='precision_weighted', error_score=0)
+            # 2. Recall
+            rec_scores = cross_val_score(self.modelo, X_sub, self.y, cv=self.k_folds, scoring='recall_weighted', error_score=0)
+
+            return np.mean(prec_scores), np.mean(rec_scores)
