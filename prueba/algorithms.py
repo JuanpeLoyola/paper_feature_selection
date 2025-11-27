@@ -14,7 +14,7 @@ def run_ga(evaluator, n_feats, n_gen=50, pop_size=50):
     toolbox.register("attr_bool", random.randint, 0, 1)
     toolbox.register("individual", tools.initRepeat, creator.Individuo, toolbox.attr_bool, n_feats)
     toolbox.register("population", tools.initRepeat, list, toolbox.individual)
-    toolbox.register("evaluate", evaluator.evaluate)
+    toolbox.register("evaluate", evaluator.evaluar)
     toolbox.register("mate", tools.cxUniform, indpb=0.5)
     toolbox.register("mutate", tools.mutFlipBit, indpb=1.0/n_feats)
     toolbox.register("select", tools.selTournament, tournsize=3)
