@@ -115,4 +115,5 @@ The project validates the superiority or equivalence of the algorithms using non
 ## ✒️ Authors
 
 **Juan Pedro García Sanz**
+
 **Adolfo Peña Marín**
