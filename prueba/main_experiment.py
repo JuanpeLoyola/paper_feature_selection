@@ -1,10 +1,12 @@
 import pandas as pd
 import time
+import sys
 from data_loader import cargar_dataset
 from evaluator import Evaluador
 from algorithms import run_ga, run_sa, run_tabu, run_pso, run_gwo
 
 # Configuración de hiperparámetros por algoritmo
+# NOTA: Los nombres de los algoritmos deben coincidir con las claves aquí
 CONFIGURACION = {
     'GA': {
         'pop_size': 200,    
@@ -37,6 +39,8 @@ CONFIGURACION = {
 # Configuración del experimento
 DATASETS = ['zoo', 'wine', 'lymphography', 'ionosphere', 'breast_cancer']
 N_EJECUCIONES = 10
+
+# Mapa de nombres a funciones
 ALGORITMOS = {
     'GA': run_ga,
     'SA': run_sa,
@@ -45,59 +49,69 @@ ALGORITMOS = {
     'GWO': run_gwo 
 }
 
-# Ejecución principal
 resultados = []
+archivo_salida = "resultados_comparativa_final.csv"
+
 print(f"🚀 Iniciando experimento: {len(DATASETS)} datasets, {len(ALGORITMOS)} algoritmos, {N_EJECUCIONES} ejecuciones\n")
 
-for ds in DATASETS:
-    # Cargar dataset
-    try:
-        X, y, feat_names = cargar_dataset(ds)
-    except Exception as e:
-        print(f"❌ Error cargando {ds}: {e}")
-        continue
-    
-    # Configurar restricciones de features
-    n_feats = X.shape[1]
-    k_min = 2
-    k_max = int(n_feats * 0.75) if n_feats > 5 else n_feats
-    evaluador = Evaluador(X, y, k_min, k_max)
-    
-    print(f"\n📂 Dataset: {ds} (Features: {n_feats})")
-    print("-" * 40)
-    
-    # Ejecutar cada algoritmo
-    for nombre_algo, funcion_algo in ALGORITMOS.items():
-        mis_params = CONFIGURACION[nombre_algo]
-        print(f"  🔹 {nombre_algo}...", end=" ", flush=True)
+try:
+    for ds in DATASETS:
+        # Cargar dataset
+        try:
+            X, y, feat_names = cargar_dataset(ds)
+        except Exception as e:
+            print(f"❌ Error cargando {ds}: {e}")
+            continue
         
-        # Múltiples ejecuciones para cada algoritmo
-        for run_id in range(N_EJECUCIONES):
-            start_time = time.time()
-            best_sol, best_fit = funcion_algo(evaluador, n_feats, mis_params)
-            elapsed = time.time() - start_time
+        # Configurar restricciones de features
+        n_feats = X.shape[1]
+        k_min = 2
+        k_max = int(n_feats * 0.75) if n_feats > 5 else n_feats
+        evaluador = Evaluador(X, y, k_min, k_max)
+        
+        print(f"\n📂 Dataset: {ds} (Features: {n_feats})")
+        print("-" * 40)
+        
+        # Ejecutar cada algoritmo
+        for nombre_algo, funcion_algo in ALGORITMOS.items():
+            mis_params = CONFIGURACION[nombre_algo]
+            print(f"  🔹 {nombre_algo}...", end=" ", flush=True)
             
-            # Calcular número de features seleccionadas
-            n_selected = sum(best_sol) if isinstance(best_sol, list) else sum(best_sol > 0.5)
-            
-            # Almacenar resultados
-            resultados.append({
-                'Dataset': ds,
-                'Algorithm': nombre_algo,
-                'Run_ID': run_id + 1,
-                'Best_Precision': best_fit,
-                'N_Features': n_selected,
-                'Time_s': elapsed
-            })
-            print(".", end="", flush=True)
-            
-        print(" ✅")
+            # Múltiples ejecuciones para cada algoritmo
+            for run_id in range(N_EJECUCIONES):
+                start_time = time.time()
+                
+                # AQUI OCURRE LA LLAMADA: Pasamos el evaluador, num features y el DICCIONARIO de parametros
+                best_sol, best_fit = funcion_algo(evaluador, n_feats, mis_params)
+                
+                elapsed = time.time() - start_time
+                
+                # Calcular número de features seleccionadas
+                n_selected = sum(best_sol) if isinstance(best_sol, list) else sum(best_sol > 0.5)
+                
+                # Almacenar resultados
+                resultados.append({
+                    'Dataset': ds,
+                    'Algorithm': nombre_algo,
+                    'Run_ID': run_id + 1,
+                    'Best_Precision': best_fit,
+                    'N_Features': n_selected,
+                    'Time_s': elapsed
+                })
+                print(".", end="", flush=True)
+                
+            print(" ✅")
 
-# Guardar resultados en CSV
-df_res = pd.DataFrame(resultados)
-archivo_salida = "resultados_comparativa_final.csv"
-df_res.to_csv(archivo_salida, index=False)
+except KeyboardInterrupt:
+    print("\n\n⚠️ Interrupción detectada. Guardando resultados parciales...")
 
-print("\n" + "="*60)
-print(f"🏁 Resultados guardados en: {archivo_salida}")
-print("="*60)
+finally:
+    # Guardar resultados en CSV pase lo que pase
+    if resultados:
+        df_res = pd.DataFrame(resultados)
+        df_res.to_csv(archivo_salida, index=False)
+        print("\n" + "="*60)
+        print(f"🏁 Resultados guardados en: {archivo_salida}")
+        print("="*60)
+    else:
+        print("\n❌ No se generaron resultados.")
