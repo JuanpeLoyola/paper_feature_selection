@@ -40,7 +40,7 @@ The code follows a decoupled modular architecture, separating the optimization l
 
 ## 📂 Project Structure
 
-El repositorio está organizado para permitir la reproducibilidad de los experimentos:
+The repository is organized to ensure experiment reproducibility:
 
 ```text
 .
@@ -74,7 +74,55 @@ Five algorithms have been implemented and tuned for the comparison, all sharing 
 
 ---
 
-💻 Installation & Usage
+## 💻 Installation & Usage
+
+1. Prerequisites
+
+Ensure you have Python 3.12 installed. Install dependencies:
+
+```bash
+
+# Option A: pip
+pip install numpy pandas scikit-learn deap seaborn matplotlib scipy
+
+# Option B: uv (recommended)
+uv sync
+```
+
+2. Run Comparative Study (Single-Objective)
+
+This script runs the 5 algorithms across the 5 datasets (10 runs each) and saves the results to a CSV file.
+
+```bash
+
+python main_experiment.py
+
+```
+Output: Generates resultados_comparativa_final.csv.
+
+3. Generate Statistical Analysis
+
+Once the experiment is finished, run the analysis to generate Boxplots and calculate p-values.
+
+```bash
+
+python analysis.py
+
+```
+
+Output: Displays distribution plots and prints significance tables (Friedman/Wilcoxon) to the console.
+
+4. Run Multi-objective Analysis
+
+To generate the Pareto Fronts (Precision vs Recall):
+
+```bash
+
+python main_multiobjective.py
+
+```
+
+Output: Generates pareto_{dataset}.png images in the root folder.
 
 ---
 
