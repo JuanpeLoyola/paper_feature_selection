@@ -6,12 +6,13 @@ from sklearn.model_selection import cross_val_score
 class Evaluador:
     """Evalúa soluciones de selección de features mediante validación cruzada."""
     
-    def __init__(self, X, y, k_min, k_max, k_folds=5):
+    def __init__(self, X, y, k_min, k_max, k_folds=5, alpha=0.0):
         self.X = X
         self.y = y
         self.k_min = k_min
         self.k_max = k_max
         self.k_folds = k_folds
+        self.alpha = alpha # Coefficient for penalty
         self.modelo = DecisionTreeClassifier(random_state=42)
 
     def evaluar(self, individuo):
@@ -37,8 +38,10 @@ class Evaluador:
             error_score=0
         )
 
-        return np.mean(precision_scores),
+        promedio_precision = np.mean(precision_scores)
 
+        return promedio_precision - self.alpha * num_features,
+    
     def evaluar_multiobjetivo(self, individuo):
             """Para Multi Objective (NSGA-II). Retorna (Precision, Recall)"""
             mask = np.array(individuo) == 1

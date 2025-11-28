@@ -63,6 +63,8 @@ archivo_salida = "resultados_comparativa_final.csv"
 
 print(f"🚀 Iniciando experimento: {len(DATASETS)} datasets, {len(ALGORITMOS)} algoritmos, {N_EJECUCIONES} ejecuciones\n")
 
+ALPHA = 0.001  # Coeficiente de penalización por número de features
+
 try:
     for ds in DATASETS:
         # Cargar dataset
@@ -91,7 +93,7 @@ try:
 
         k_min = 2
         k_max = int(n_feats * 0.75) if n_feats > 5 else n_feats
-        evaluador = Evaluador(X, y, k_min, k_max)
+        evaluador = Evaluador(X, y, k_min, k_max, k_folds=k_folds_dinamico, alpha=ALPHA)
         
         print(f"\n📂 Dataset: {ds} (Features: {n_feats})")
         print("-" * 40)
