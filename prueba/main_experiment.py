@@ -18,30 +18,30 @@ warnings.filterwarnings("ignore", category=UserWarning) # Para el warning de cla
 # NOTA: Los nombres de los algoritmos deben coincidir con las claves aquí
 CONFIGURACION = {
     'GA': {
-        'pop_size': 200,    
-        'n_gen': 3,         
+        'pop_size': 50,    
+        'n_gen': 50,         
         'p_cruce': 0.8,     
         'p_mutacion': 0.2,  
         'tam_torneo': 4     
     },
     'SA': {
-        'max_iter': 600,
+        'max_iter': 2500,
         'alpha': 0.95,
         'temp_init': 1.0
     },
     'Tabu': {
-        'max_iter': 60,
+        'max_iter': 250,
         'tabu_size': 10,
         'n_neighbors': 10
     },
     'PSO': {
-        'n_particles': 30,  
-        'max_iter': 20,
+        'n_particles': 50,  
+        'max_iter': 50,
         'w': 0.7, 'c1': 1.5, 'c2': 1.5
     },
     'GWO': {
-        'pop_size': 30,
-        'max_iter': 20
+        'pop_size': 50,
+        'max_iter': 50
     }
 }
 
