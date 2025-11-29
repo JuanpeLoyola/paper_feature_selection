@@ -6,7 +6,7 @@ from algorithms import run_ga
 
 # 1. Configuración
 DATASET_TUNING = 'ionosphere' # Usamos este como "banco de pruebas"
-N_TRIALS = 10 # Número de experimentos que hará Optuna
+N_TRIALS = 50 # Número de experimentos que hará Optuna
 
 print(f"🎯 Iniciando Tuning de Hiperparámetros con Optuna en '{DATASET_TUNING}'...")
 

@@ -45,7 +45,12 @@ def analizar_resultados(archivo_csv):
         plt.title(f'Comparativa de Precisión - Dataset: {ds}')
         plt.ylabel('Precision Weighted')
         plt.ylim(0, 1.05)
-        plt.show()
+        # --- CAMBIO AQUÍ ---
+        # En lugar de solo mostrar, guardamos la imagen
+        nombre_archivo = f"boxplot_{ds}.png"
+        plt.savefig(nombre_archivo, dpi=300) # dpi=300 es calidad de imprenta
+        print(f"   📊 Gráfico guardado: {nombre_archivo}")
+        plt.close() # Cerramos la figura para liberar memoria
 
     # 4) Tests estadísticos: primero Friedman (global), luego Wilcoxon por pares si procede
     print("\n" + "="*50)
