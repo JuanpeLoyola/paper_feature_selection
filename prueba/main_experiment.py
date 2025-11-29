@@ -47,15 +47,15 @@ CONFIGURACION = {
 
 # Configuración del experimento
 DATASETS = ['zoo', 'wine', 'lymphography', 'ionosphere', 'breast_cancer']
-N_EJECUCIONES = 5
+N_EJECUCIONES = 10
 
 # Mapa de nombres a funciones
 ALGORITMOS = {
     'GA': run_ga,
     'SA': run_sa,
-    #'Tabu': run_tabu,
-    #'PSO': run_pso,
-    #'GWO': run_gwo 
+    'Tabu': run_tabu,
+    'PSO': run_pso,
+    'GWO': run_gwo 
 }
 
 resultados = []
