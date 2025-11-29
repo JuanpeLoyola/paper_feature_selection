@@ -6,7 +6,7 @@ from algorithms import run_ga
 
 # 1. Configuración
 DATASET_TUNING = 'ionosphere' # Usamos este como "banco de pruebas"
-N_TRIALS = 50 # Número de experimentos que hará Optuna
+N_TRIALS = 30 # Número de experimentos que hará Optuna
 
 print(f"🎯 Iniciando Tuning de Hiperparámetros con Optuna en '{DATASET_TUNING}'...")
 
@@ -26,17 +26,17 @@ def objective(trial):
     """
     # Definir el espacio de búsqueda (Hiperparámetros a optimizar)
     params = {
-        # Rango de población: entre 50 y 300
-        'pop_size': trial.suggest_int('pop_size', 50, 300, step=50),
+        # Rango de población: entre 50 y 150
+        'pop_size': trial.suggest_int('pop_size', 50, 250, step=30),
         
-        # Generaciones: entre 10 y 100
-        'n_gen': trial.suggest_int('n_gen', 10, 100, step=10),
+        # Generaciones: entre 30 y 100
+        'n_gen': trial.suggest_int('n_gen', 30, 100, step=10),
         
-        # Probabilidad de cruce: entre 0.5 y 0.95
-        'p_cruce': trial.suggest_float('p_cruce', 0.5, 0.95),
+        # Probabilidad de cruce: entre 0.5 y 0.9
+        'p_cruce': trial.suggest_float('p_cruce', 0.5, 0.9),
         
-        # Probabilidad de mutación: entre 0.05 y 0.4
-        'p_mutacion': trial.suggest_float('p_mutacion', 0.05, 0.4),
+        # Probabilidad de mutación: entre 0.05 y 0.3
+        'p_mutacion': trial.suggest_float('p_mutacion', 0.05, 0.3),
         
         # Tamaño del torneo: 3, 4 o 5
         'tam_torneo': trial.suggest_int('tam_torneo', 3, 5)
@@ -44,17 +44,13 @@ def objective(trial):
     
     # Ejecutar GA con estos parámetros
     # Hacemos 3 repeticiones internas para que la aleatoriedad no engañe a Optuna
-    fitness_runs = []
-    for _ in range(3):
-        try:
-            _, best_fit = run_ga(evaluador, n_feats, params)
-            fitness_runs.append(best_fit)
-        except Exception:
-            return 0.0 # Si falla por algo, castigamos con 0
+    try:
+        _, best_fit = run_ga(evaluador, n_feats, params)
+        return best_fit
+    except Exception as e:
+        print(f"⚠️ Error durante la ejecución de GA con params {params}: {e}")
+        return 0.0 # Si falla por algo, castigamos con 0
             
-    # El objetivo es maximizar el promedio de las 3 repeticiones
-    return np.mean(fitness_runs)
-
 # Crear el estudio de optimización
 study = optuna.create_study(direction='maximize')
 study.optimize(objective, n_trials=N_TRIALS)

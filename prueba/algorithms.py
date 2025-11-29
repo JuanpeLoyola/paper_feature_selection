@@ -41,11 +41,11 @@ def run_ga(evaluator, n_feats, params):
     
     # Evolución
     # CORRECCIÓN: Pasar n_gen explícitamente extraído del diccionario
-    algorithms.eaMuPlusLambda(pop, toolbox, mu=pop_size, lambda_=pop_size,
+    pop, log = algorithms.eaMuPlusLambda(pop, toolbox, mu=pop_size, lambda_=pop_size,
                              cxpb=p_cx, mutpb=p_mut, ngen=n_gen, 
                              stats=stats, halloffame=hof, verbose=False)
     
-    return hof[0], hof[0].fitness.values[0]
+    return hof[0], hof[0].fitness.values[0], log
 
 
 def run_sa(evaluator, n_feats, params):

@@ -18,10 +18,10 @@ warnings.filterwarnings("ignore", category=UserWarning) # Para el warning de cla
 # NOTA: Los nombres de los algoritmos deben coincidir con las claves aquí
 CONFIGURACION = {
     'GA': {
-        'pop_size': 50,    
-        'n_gen': 50,         
-        'p_cruce': 0.8,     
-        'p_mutacion': 0.2,  
+        'pop_size': 110,    
+        'n_gen': 20,         
+        'p_cruce': 0.88,     
+        'p_mutacion': 0.12,  
         'tam_torneo': 4     
     },
     'SA': {
