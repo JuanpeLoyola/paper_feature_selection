@@ -49,7 +49,7 @@ def analizar_resultados(archivo_csv):
 
         plt.title(f'Precision Comparison - Dataset: {ds}')
         plt.ylabel('Precision Weighted')
-        plt.ylim(0, 1.05)
+        #plt.ylim(0, 1.05)
         # --- CAMBIO AQUÍ ---
         # En lugar de solo mostrar, guardamos la imagen
         nombre_archivo = f"{CARPETA_IMG}/boxplot_{ds}.png" # <--- CAMBIO AQUÍ
@@ -90,4 +90,4 @@ def analizar_resultados(archivo_csv):
 
 if __name__ == "__main__":
     # Nombre del archivo resultante por defecto desde main_experiment.py
-    analizar_resultados("resultados_comparativa_final.csv")
+    analizar_resultados("/home/juanpe/master/practicas/paper_feature_selection/csv/resultados_comparativa_final.csv")
