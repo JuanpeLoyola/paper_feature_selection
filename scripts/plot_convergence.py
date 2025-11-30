@@ -6,6 +6,7 @@ import math
 from data_loader import cargar_dataset
 from evaluator import Evaluador
 from algorithms import run_ga
+import os
 
 # --- CONFIGURACIÓN (Usa tus mejores parámetros de Optuna) ---
 PARAMS_GA = {
@@ -17,6 +18,9 @@ PARAMS_GA = {
 }
 
 DATASETS = ['zoo', 'wine', 'lymphography', 'ionosphere', 'breast_cancer']
+
+CARPETA_IMG = "imagenes"
+os.makedirs(CARPETA_IMG, exist_ok=True)
 
 # 1. Configurar la figura compuesta (Grid)
 n_ds = len(DATASETS)
@@ -72,7 +76,7 @@ for j in range(i + 1, len(axes)):
     fig.delaxes(axes[j])
 
 plt.tight_layout()
-nombre_salida = "convergence_combined.png"
+nombre_salida = f"{CARPETA_IMG}/convergence_combined.png" # <--- CAMBIO
 plt.savefig(nombre_salida, dpi=300)
 print(f"\n🏁 Gráfico guardado: {nombre_salida}")
 plt.show()

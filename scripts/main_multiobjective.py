@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import warnings
 from sklearn.exceptions import UndefinedMetricWarning
+import os
 
 from data_loader import cargar_dataset
 from evaluator import Evaluador
@@ -28,6 +29,9 @@ resultados_pareto = []
 
 print("🚀 INICIANDO EXPERIMENTO MULTIOBJETIVO (NSGA-II)...")
 print(f"Objetivos: Maximizar Precisión vs Maximizar Recall\n")
+
+CARPETA_IMG = "imagenes"
+os.makedirs(CARPETA_IMG, exist_ok=True)
 
 for ds in DATASETS:
     # 1. Cargar
@@ -85,17 +89,17 @@ for ds in DATASETS:
     # Línea de "ideal" (opcional)
     plt.plot([0, 1], [0, 1], ls="--", c=".3", alpha=0.3, label="Equilibrio perfecto")
     
-    plt.title(f'Frente de Pareto - {ds.upper()}\n(Compromiso: Precisión vs Recall)', fontsize=14)
-    plt.xlabel('Precisión (Precision)', fontsize=12)
-    plt.ylabel('Sensibilidad (Recall)', fontsize=12)
+    plt.title(f'Pareto Front - {ds.upper()}\n(Precision-Recall Trade-off)', fontsize=14)
+    plt.xlabel('Precision', fontsize=12)
+    plt.ylabel('Recall', fontsize=12)
     plt.xlim(0.4, 1.05) # Ajustar ejes para ver mejor la zona alta
     plt.ylim(0.4, 1.05)
     plt.grid(True, linestyle='--', alpha=0.7)
     
     # Guardar imagen para el paper
-    nombre_imagen = f"pareto_{ds}.png"
+    nombre_imagen = f"{CARPETA_IMG}/pareto_{ds}.png" # <--- CAMBIO AQUÍ
     plt.savefig(nombre_imagen, dpi=300, bbox_inches='tight')
-    plt.close() 
+    plt.close()
 
 # Guardar CSV final
 df = pd.DataFrame(resultados_pareto)

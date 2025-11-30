@@ -7,6 +7,7 @@ from evaluator import Evaluador
 from algorithms import run_ga, run_sa, run_tabu, run_pso, run_gwo
 import warnings # <--- NUEVO
 from sklearn.exceptions import UndefinedMetricWarning # <--- NUEVO
+import random
 
 # --- 1. SILENCIAR WARNINGS MOLESTOS ---
 # Ignoramos warnings de métricas (divisiones por cero en modelos malos iniciales)
@@ -105,6 +106,11 @@ try:
             
             # Múltiples ejecuciones para cada algoritmo
             for run_id in range(N_EJECUCIONES):
+
+                semilla_actual = 42 + run_id
+                random.seed(semilla_actual)
+                np.random.seed(semilla_actual)
+
                 start_time = time.time()
                 
                 # AQUI OCURRE LA LLAMADA: Pasamos el evaluador, num features y el DICCIONARIO de parametros

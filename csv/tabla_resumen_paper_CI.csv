@@ -1,0 +1,27 @@
+Dataset,Algorithm,Precision (Mean ± 95% CI),Features (Mean ± 95% CI)
+,,,
+breast_cancer,GA,0.9582 ± 0.0032,8.4 ± 1.7
+breast_cancer,GWO,0.9577 ± 0.0020,7.1 ± 1.8
+breast_cancer,PSO,0.9526 ± 0.0017,9.8 ± 1.9
+breast_cancer,SA,0.9444 ± 0.0040,12.6 ± 1.8
+breast_cancer,Tabu,0.9563 ± 0.0012,8.5 ± 1.2
+ionosphere,GA,0.9405 ± 0.0038,12.0 ± 2.3
+ionosphere,GWO,0.9460 ± 0.0047,10.3 ± 1.2
+ionosphere,PSO,0.9349 ± 0.0028,13.4 ± 2.1
+ionosphere,SA,0.9222 ± 0.0060,14.4 ± 1.7
+ionosphere,Tabu,0.9403 ± 0.0021,12.7 ± 1.7
+lymphography,GA,0.8695 ± 0.0053,15.3 ± 1.7
+lymphography,GWO,0.8762 ± 0.0071,11.6 ± 1.0
+lymphography,PSO,0.8613 ± 0.0056,15.8 ± 2.6
+lymphography,SA,0.8368 ± 0.0188,14.0 ± 2.0
+lymphography,Tabu,0.8773 ± 0.0033,14.1 ± 1.0
+wine,GA,0.9662 ± 0.0010,7.3 ± 0.9
+wine,GWO,0.9642 ± 0.0017,6.6 ± 0.9
+wine,PSO,0.9670 ± 0.0000,8.0 ± 0.0
+wine,SA,0.9620 ± 0.0031,6.5 ± 0.9
+wine,Tabu,0.9666 ± 0.0004,7.7 ± 0.7
+zoo,GA,0.9355 ± 0.0014,8.6 ± 1.3
+zoo,GWO,0.9349 ± 0.0013,8.3 ± 1.8
+zoo,PSO,0.9354 ± 0.0009,8.1 ± 1.1
+zoo,SA,0.9318 ± 0.0015,9.8 ± 1.4
+zoo,Tabu,0.9352 ± 0.0009,10.3 ± 2.1

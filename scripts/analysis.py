@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from scipy.stats import friedmanchisquare, wilcoxon
 import itertools
 import warnings
+import os
 
 warnings.filterwarnings("ignore")  # Silencia warnings para salidas limpias
 
@@ -35,6 +36,10 @@ def analizar_resultados(archivo_csv):
     # 3) Visualización: para cada dataset, mostrar boxplot + swarm de precisiones
     #    - Boxplot: resume la distribución por algoritmo
     #    - Swarmplot: muestra cada punto de ejecución encima del boxplot
+
+    CARPETA_IMG = "imagenes"
+    os.makedirs(CARPETA_IMG, exist_ok=True)
+
     for ds in datasets:
         plt.figure(figsize=(12, 6))
         data_subset = df[df['Dataset'] == ds]
@@ -42,15 +47,15 @@ def analizar_resultados(archivo_csv):
         sns.boxplot(x='Algorithm', y='Best_Precision', data=data_subset, palette="Set3")
         sns.swarmplot(x='Algorithm', y='Best_Precision', data=data_subset, color=".25", size=3)
 
-        plt.title(f'Comparativa de Precisión - Dataset: {ds}')
+        plt.title(f'Precision Comparison - Dataset: {ds}')
         plt.ylabel('Precision Weighted')
         plt.ylim(0, 1.05)
         # --- CAMBIO AQUÍ ---
         # En lugar de solo mostrar, guardamos la imagen
-        nombre_archivo = f"boxplot_{ds}.png"
-        plt.savefig(nombre_archivo, dpi=300) # dpi=300 es calidad de imprenta
+        nombre_archivo = f"{CARPETA_IMG}/boxplot_{ds}.png" # <--- CAMBIO AQUÍ
+        plt.savefig(nombre_archivo, dpi=300)
         print(f"   📊 Gráfico guardado: {nombre_archivo}")
-        plt.close() # Cerramos la figura para liberar memoria
+        plt.close()
 
     # 4) Tests estadísticos: primero Friedman (global), luego Wilcoxon por pares si procede
     print("\n" + "="*50)
