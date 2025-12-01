@@ -44,14 +44,18 @@ The repository is organized to ensure experiment reproducibility:
 
 ```text
 .
-├── algorithms.py          # 🧠 Metaheuristics logic (GA, SA, TS, PSO, GWO)
-├── algorithms_mo.py       # 🧬 Multi-objective logic (NSGA-II)
-├── analysis.py            # 📊 Script for statistical analysis and visualization
-├── data_loader.py         # 📥 Dataset ingestion and cleaning (UCI)
-├── evaluator.py           # ⚖️ Evaluator Class (Wrapper + Constraints)
-├── main_experiment.py     # 🚀 Main script (Single-Objective Benchmark)
-├── main_multiobjective.py # 🎯 Secondary script (Pareto Analysis)
+├── csv/                   # 📂 Input datasets (UCI) and generated CSV results
+├── imagenes/              # 📊 Generated plots (Pareto fronts, Boxplots)
+├── scripts/               # 🧠 Source code
+│   ├── algorithms.py          # Metaheuristics logic (GA, SA, TS, PSO, GWO)
+│   ├── algorithms_mo.py       # Multi-objective logic (NSGA-II)
+│   ├── analysis.py            # Statistical analysis and visualization
+│   ├── data_loader.py         # Dataset ingestion and cleaning
+│   ├── evaluator.py           # Evaluator Class (Wrapper + Constraints)
+│   ├── main_experiment.py     # Main script (Single-Objective Benchmark)
+│   └── main_multiobjective.py # Secondary script (Pareto Analysis)
 ├── pyproject.toml         # ⚙️ Project dependencies
+├── uv.lock                # 🔒 Lock file for dependencies
 └── README.md              # 📄 Documentation
 
 ```
@@ -130,7 +134,7 @@ Output: Generates pareto_{dataset}.png images in the root folder.
 
 The study is conducted on 5 medical/biological datasets from the UCI repository (Breast Cancer, Wine, Ionosphere, Lymphography, Zoo).
 
-**Hard Constraints:** Unlike standard approaches that use soft penalties, this project implements a **"death penalty"** mechanism. If an individual selects fewer than $K_{min}$ or more than $K_{max}$ features, its fitness is immediately reduced to 0.0, forcing the algorithm to search for compact solutions.
+**Hard Constraints:** Unlike standard approaches that use soft penalties, this project implements a **"death penalty"** mechanism. If an individual selects fewer than $k_{min}$ or more than $k_{max}$ features, its fitness is immediately reduced to 0.0, forcing the algorithm to search for compact solutions.
 
 **Validation:** The fitness of each solution is calculated using the mean precision of a Decision Tree with Cross-Validation ($k=5$ folds).
 
