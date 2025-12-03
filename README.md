@@ -12,7 +12,7 @@ The main objective is to solve the combinatorial problem of finding the optimal 
 
 ---
 
-## 📋 Tabla de Contenidos
+## 📋 Table of Contents
 - [Architecture and Tech Stack](#-arquitectura-y-tech-stack)
 - [Project Structure](#-estructura-del-proyecto)
 - [Implemented Algorithms](#-algoritmos-implementados)
