@@ -16,7 +16,7 @@ def calcular_margen_ci(serie, confianza=0.95):
 
 
 # load results file
-archivo = "csv/resultados_comparativa_final.csv"
+archivo = "csv/final_comparison_results.csv"
 try:
     df = pd.read_csv(archivo)  # read CSV
 except FileNotFoundError:
@@ -44,7 +44,7 @@ resumen['Features (Mean ± 95% CI)'] = resumen.apply(
 tabla_final = resumen[['Dataset', 'Algorithm', 'Precision (Mean ± 95% CI)', 'Features (Mean ± 95% CI)']]
 
 # export CSV
-nombre_salida = "csv/tabla_resumen_paper_CI.csv"
+nombre_salida = "csv/paper_summary_table_CI.csv"
 tabla_final.to_csv(nombre_salida, index=False)  # save
 
 print("\n" + "=" * 60)

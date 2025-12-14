@@ -64,4 +64,4 @@ def analizar_resultados(archivo_csv):
 
 
 if __name__ == "__main__":
-    analizar_resultados("/home/juanpe/master/practicas/paper_feature_selection/csv/resultados_comparativa_final.csv")  # default execution
+    analizar_resultados("/home/juanpe/master/practicas/paper_feature_selection/csv/final_comparison_results.csv")  # default execution

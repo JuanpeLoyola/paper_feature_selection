@@ -56,7 +56,7 @@ for ds in DATASETS:
 
         resultados_pareto.append({
             'Dataset': ds,
-            'Solucion_ID': i,
+            'Solution_ID': i,
             'Precision': prec,
             'Recall': recall,
             'N_Features': sum(ind),
@@ -85,9 +85,9 @@ for ds in DATASETS:
     plt.close()  # close figure
 
 df = pd.DataFrame(resultados_pareto)  # final DataFrame
-df.to_csv("resultados_multiobjetivo.csv", index=False)  # save CSV
+df.to_csv("csv/multiobjective_results.csv", index=False)  # save CSV
 print("\n" + "=" * 60)
 print("🏁 Experiment finished.")
-print("1. Data saved at: 'resultados_multiobjetivo.csv'")
+print("1. Data saved at: 'csv/multiobjective_results.csv'")
 print("2. Images generated: pareto_*.png (Use them in your Chapter 5)")
 print("=" * 60)

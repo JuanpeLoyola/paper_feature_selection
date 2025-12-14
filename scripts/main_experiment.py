@@ -30,7 +30,7 @@ N_EJECUCIONES = 30  # repetitions per algorithm
 ALGORITMOS = {'GA': run_ga, 'SA': run_sa, 'Tabu': run_tabu, 'PSO': run_pso, 'GWO': run_gwo}
 
 resultados = []  # results accumulator
-archivo_salida = "csv/resultados_comparativa_final.csv"  # output CSV
+archivo_salida = "csv/final_comparison_results.csv"  # output CSV
 
 print(f"🚀 Starting experiment: {len(DATASETS)} datasets, {len(ALGORITMOS)} algorithms, {N_EJECUCIONES} runs\n")
 
