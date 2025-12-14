@@ -228,6 +228,6 @@ The project validates the superiority or equivalence of the algorithms using non
 
 ## ✒️ Authors
 
-**Juan Pedro García Sanz**
+**Juan Pedro García Sanz (jpgarciasanz@al.uloyola.es)**
 
-**Adolfo Peña Marín**
+**Adolfo Peña Marín (apenamarin@al.uloyola.es)**
