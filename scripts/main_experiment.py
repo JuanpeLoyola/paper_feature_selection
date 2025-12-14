@@ -9,11 +9,11 @@ import warnings
 from sklearn.exceptions import UndefinedMetricWarning  
 import random  
 
-# ignorar warnings molestos de métricas y usuarios
+# ignore annoying metric and user warnings
 warnings.filterwarnings("ignore", category=UndefinedMetricWarning)
 warnings.filterwarnings("ignore", category=UserWarning)
 
-# hiperparámetros por algoritmo
+# hyperparameters per algorithm
 CONFIGURACION = {
     'GA': {'pop_size': 110, 'n_gen': 20, 'p_cruce': 0.88, 'p_mutacion': 0.12, 'tam_torneo': 4},
     'SA': {'max_iter': 2500, 'alpha': 0.95, 'temp_init': 1.0},
@@ -23,63 +23,63 @@ CONFIGURACION = {
 }
 
 # experiment configuration
-DATASETS = ['zoo', 'wine', 'lymphography', 'ionosphere', 'breast_cancer']  # datasets a evaluar
-N_EJECUCIONES = 30  # repeticiones por algoritmo
+DATASETS = ['zoo', 'wine', 'lymphography', 'ionosphere', 'breast_cancer']  # datasets to evaluate
+N_EJECUCIONES = 30  # repetitions per algorithm
 
-# mapa de nombre -> función
+# name -> function mapping
 ALGORITMOS = {'GA': run_ga, 'SA': run_sa, 'Tabu': run_tabu, 'PSO': run_pso, 'GWO': run_gwo}
 
-resultados = []  # acumulador de resultados
-archivo_salida = "csv/resultados_comparativa_final.csv"  # CSV de salida
+resultados = []  # results accumulator
+archivo_salida = "csv/resultados_comparativa_final.csv"  # output CSV
 
-print(f"🚀 Iniciando experimento: {len(DATASETS)} datasets, {len(ALGORITMOS)} algoritmos, {N_EJECUCIONES} ejecuciones\n")
+print(f"🚀 Starting experiment: {len(DATASETS)} datasets, {len(ALGORITMOS)} algorithms, {N_EJECUCIONES} runs\n")
 
-ALPHA = 0.001  # penalización por número de features
+ALPHA = 0.001  # penalty for number of features
 
 try:
-    for ds in DATASETS:  # iterar datasets
+    for ds in DATASETS:  # iterate datasets
         try:
-            X, y, feat_names = cargar_dataset(ds)  # cargar datos
+            X, y, feat_names = cargar_dataset(ds)  # load data
         except Exception as e:
-            print(f"❌ Error cargando {ds}: {e}")  # si falla, saltar
+            print(f"❌ Error loading {ds}: {e}")  # if fails, skip
             continue
 
-        n_feats = X.shape[1]  # número total de features
+        n_feats = X.shape[1]  # total number of features
 
-        # ajuste dinámico de folds según la clase con menos muestras
-        min_samples_clase = np.min(np.bincount(y))  # mínimo por clase
-        k_folds_dinamico = min(5, min_samples_clase)  # usar hasta 5 folds
+        # dynamic fold adjustment based on smallest class
+        min_samples_clase = np.min(np.bincount(y))  # minimum per class
+        k_folds_dinamico = min(5, min_samples_clase)  # use up to 5 folds
         if k_folds_dinamico < 2:
-            k_folds_dinamico = 2  # seguridad
+            k_folds_dinamico = 2  # safety
         if k_folds_dinamico < 5:
-            print(f"⚠️  Dataset '{ds}' tiene clases pequeñas. Reduciendo CV a {k_folds_dinamico}-Folds.")
+            print(f"⚠️  Dataset '{ds}' has small classes. Reducing CV to {k_folds_dinamico}-Folds.")
 
-        k_min = 2  # mínimo features seleccionables
-        k_max = int(n_feats * 0.75) if n_feats > 5 else n_feats  # máximo permitido
-        evaluador = Evaluador(X, y, k_min, k_max, k_folds=k_folds_dinamico, alpha=ALPHA)  # crear evaluador
+        k_min = 2  # minimum selectable features
+        k_max = int(n_feats * 0.75) if n_feats > 5 else n_feats  # maximum allowed
+        evaluador = Evaluador(X, y, k_min, k_max, k_folds=k_folds_dinamico, alpha=ALPHA)  # create evaluator
 
         print(f"\n📂 Dataset: {ds} (Features: {n_feats})")
         print("-" * 40)
 
-        for nombre_algo, funcion_algo in ALGORITMOS.items():  # ejecutar cada algoritmo
-            mis_params = CONFIGURACION[nombre_algo]  # parámetros para el algoritmo
+        for nombre_algo, funcion_algo in ALGORITMOS.items():  # run each algorithm
+            mis_params = CONFIGURACION[nombre_algo]  # parameters for algorithm
             print(f"  🔹 {nombre_algo}...", end=" ", flush=True)
 
-            for run_id in range(N_EJECUCIONES):  # repeticiones
-                semilla_actual = 42 + run_id  # semilla reproducible
-                random.seed(semilla_actual)  # semilla global
-                np.random.seed(semilla_actual)  # semilla numpy
+            for run_id in range(N_EJECUCIONES):  # repetitions
+                semilla_actual = 42 + run_id  # reproducible seed
+                random.seed(semilla_actual)  # global seed
+                np.random.seed(semilla_actual)  # numpy seed
 
-                start_time = time.time()  # tiempo inicio
+                start_time = time.time()  # start time
 
-                resultado = funcion_algo(evaluador, n_feats, mis_params)  # ejecutar algoritmo
-                best_sol, best_fit = resultado[0], resultado[1]  # extraer solución y fitness
+                resultado = funcion_algo(evaluador, n_feats, mis_params)  # run algorithm
+                best_sol, best_fit = resultado[0], resultado[1]  # extract solution and fitness
 
-                elapsed = time.time() - start_time  # tiempo transcurrido
+                elapsed = time.time() - start_time  # elapsed time
 
-                n_selected = sum(best_sol) if isinstance(best_sol, list) else sum(best_sol > 0.5)  # contar features
+                n_selected = sum(best_sol) if isinstance(best_sol, list) else sum(best_sol > 0.5)  # count features
 
-                resultados.append({  # guardar resultado
+                resultados.append({  # save result
                     'Dataset': ds,
                     'Algorithm': nombre_algo,
                     'Run_ID': run_id + 1,
@@ -92,14 +92,14 @@ try:
             print(" ✅")
 
 except KeyboardInterrupt:
-    print("\n\n⚠️ Interrupción detectada. Guardando resultados parciales...")  # manejar Ctrl+C
+    print("\n\n⚠️ Interruption detected. Saving partial results...")  # handle Ctrl+C
 
 finally:
-    if resultados:  # si hay resultados, guardar
+    if resultados:  # if there are results, save
         df_res = pd.DataFrame(resultados)  # DataFrame
-        df_res.to_csv(archivo_salida, index=False)  # guardar CSV
+        df_res.to_csv(archivo_salida, index=False)  # save CSV
         print("\n" + "=" * 60)
-        print(f"🏁 Resultados guardados en: {archivo_salida}")
+        print(f"🏁 Results saved at: {archivo_salida}")
         print("=" * 60)
     else:
-        print("\n❌ No se generaron resultados.")  # si no hay resultados
+        print("\n❌ No results generated.")  # if no results

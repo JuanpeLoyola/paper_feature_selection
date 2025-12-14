@@ -2,39 +2,39 @@ import random
 import numpy as np  
 from deap import base, creator, tools, algorithms  
 
-# crear clase de fitness multiobjetivo si no existe
+# create multi-objective fitness class if not exists
 if not hasattr(creator, "FitnessMulti"):
-    creator.create("FitnessMulti", base.Fitness, weights=(1.0, 1.0))  # optimizar dos objetivos (max, max)
-# crear clase de individuo para multiobjetivo si no existe
+    creator.create("FitnessMulti", base.Fitness, weights=(1.0, 1.0))  # optimize two objectives (max, max)
+# create multi-objective individual class if not exists
 if not hasattr(creator, "IndividuoMO"):
-    creator.create("IndividuoMO", list, fitness=creator.FitnessMulti)  # individuo basado en lista
+    creator.create("IndividuoMO", list, fitness=creator.FitnessMulti)  # list-based individual
 
 def run_nsga2(evaluator, n_feats, params):
-    pop_size = params.get('pop_size', 100)  # tamaño de la población
-    n_gen = params.get('n_gen', 50)  # número de generaciones
-    p_cx = params.get('p_cruce', 0.8)  # probabilidad de cruce
-    p_mut = params.get('p_mutacion', 0.2)  # probabilidad de mutación
+    pop_size = params.get('pop_size', 100)  # population size
+    n_gen = params.get('n_gen', 50)  # number of generations
+    p_cx = params.get('p_cruce', 0.8)  # crossover probability
+    p_mut = params.get('p_mutacion', 0.2)  # mutation probability
 
-    toolbox = base.Toolbox()  # contenedor de operadores
-    toolbox.register("attr_bool", random.randint, 0, 1)  # gen de atributo binario
-    toolbox.register("individual", tools.initRepeat, creator.IndividuoMO, toolbox.attr_bool, n_feats)  # individuo
-    toolbox.register("population", tools.initRepeat, list, toolbox.individual)  # población
+    toolbox = base.Toolbox()  # operator container
+    toolbox.register("attr_bool", random.randint, 0, 1)  # binary attribute gene
+    toolbox.register("individual", tools.initRepeat, creator.IndividuoMO, toolbox.attr_bool, n_feats)  # individual
+    toolbox.register("population", tools.initRepeat, list, toolbox.individual)  # population
 
-    toolbox.register("evaluate", evaluator.evaluar_multiobjetivo)  # función de evaluación multiobjetivo
+    toolbox.register("evaluate", evaluator.evaluar_multiobjetivo)  # multi-objective evaluation function
 
-    toolbox.register("mate", tools.cxUniform, indpb=0.5)  # cruce uniforme
-    toolbox.register("mutate", tools.mutFlipBit, indpb=1.0/n_feats)  # mutación por flip bit
-    toolbox.register("select", tools.selNSGA2)  # selección NSGA-II
+    toolbox.register("mate", tools.cxUniform, indpb=0.5)  # uniform crossover
+    toolbox.register("mutate", tools.mutFlipBit, indpb=1.0/n_feats)  # flip bit mutation
+    toolbox.register("select", tools.selNSGA2)  # NSGA-II selection
 
-    pop = toolbox.population(n=pop_size)  # crear población inicial
-    pareto_front = tools.ParetoFront()  # hall of fame para Pareto
+    pop = toolbox.population(n=pop_size)  # create initial population
+    pareto_front = tools.ParetoFront()  # Pareto hall of fame
 
-    stats = tools.Statistics(lambda ind: ind.fitness.values)  # recopilar fitness
-    stats.register("avg", np.mean, axis=0)  # media por objetivo
-    stats.register("max", np.max, axis=0)  # máximo por objetivo
+    stats = tools.Statistics(lambda ind: ind.fitness.values)  # collect fitness
+    stats.register("avg", np.mean, axis=0)  # average per objective
+    stats.register("max", np.max, axis=0)  # maximum per objective
 
     pop, logbook = algorithms.eaMuPlusLambda(pop, toolbox, mu=pop_size, lambda_=pop_size,
                                              cxpb=p_cx, mutpb=p_mut, ngen=n_gen,
-                                             stats=stats, halloffame=pareto_front, verbose=False)  # ejecutar NSGA-II
+                                             stats=stats, halloffame=pareto_front, verbose=False)  # run NSGA-II
 
-    return pareto_front, logbook  # devolver frente de Pareto y log
+    return pareto_front, logbook  # return Pareto front and log

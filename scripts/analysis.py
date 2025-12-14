@@ -1,67 +1,67 @@
-import pandas as pd  # manejo de datos tabulares
-import seaborn as sns  # visualización estadística
-import matplotlib.pyplot as plt  # backend de plots
-from scipy.stats import friedmanchisquare, wilcoxon  # tests estadísticos
-import itertools  # combinaciones por pares
-import warnings  # control de warnings
-import os  # operaciones de sistema de ficheros
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+from scipy.stats import friedmanchisquare, wilcoxon
+import itertools
+import warnings
+import os
 
-warnings.filterwarnings("ignore")  # ignorar warnings
+warnings.filterwarnings("ignore")
 
 
 def analizar_resultados(archivo_csv):
-    """Leer CSV de resultados y generar gráficos y tests."""
+    """Read results CSV and generate plots and tests."""
     try:
-        df = pd.read_csv(archivo_csv)  # leer CSV
+        df = pd.read_csv(archivo_csv)  # read CSV
     except FileNotFoundError:
-        print("❌ Archivo CSV no encontrado. Ejecuta main_experiment.py primero.")  # avisar si falta
-        return  # salir si no existe el archivo
+        print("❌ CSV file not found. Run main_experiment.py first.")  # warn if missing
+        return  # exit if file doesn't exist
 
-    datasets = df['Dataset'].unique()  # lista de datasets únicos
-    algoritmos = df['Algorithm'].unique()  # lista de algoritmos únicos
-    print(f"📊 Analizando: {len(datasets)} datasets, {len(algoritmos)} algoritmos\n")  # resumen
+    datasets = df['Dataset'].unique()  # list of unique datasets
+    algoritmos = df['Algorithm'].unique()  # list of unique algorithms
+    print(f"📊 Analyzing: {len(datasets)} datasets, {len(algoritmos)} algorithms\n")  # summary
 
-    CARPETA_IMG = "images"  # carpeta para guardar imágenes
-    os.makedirs(CARPETA_IMG, exist_ok=True)  # crear carpeta si hace falta
+    CARPETA_IMG = "images"  # folder to save images
+    os.makedirs(CARPETA_IMG, exist_ok=True)  # create folder if needed
 
     for ds in datasets:
-        plt.figure(figsize=(12, 6))  # nueva figura
-        data_subset = df[df['Dataset'] == ds]  # filtrar por dataset
+        plt.figure(figsize=(12, 6))  # new figure
+        data_subset = df[df['Dataset'] == ds]  # filter by dataset
 
         sns.boxplot(x='Algorithm', y='Best_Precision', data=data_subset, palette="Set3")  # boxplot
-        sns.swarmplot(x='Algorithm', y='Best_Precision', data=data_subset, color=".25", size=3)  # puntos
+        sns.swarmplot(x='Algorithm', y='Best_Precision', data=data_subset, color=".25", size=3)  # points
 
-        # plt.title(f'Precision Comparison - Dataset: {ds}')  # título
-        plt.ylabel('Precision Weighted')  # etiqueta Y
-        nombre_archivo = f"{CARPETA_IMG}/boxplot_{ds}.png"  # ruta salida
-        plt.savefig(nombre_archivo, dpi=300)  # guardar figura
-        print(f"   📊 Gráfico guardado: {nombre_archivo}")  # informar
-        plt.close()  # cerrar figura
+        # plt.title(f'Precision Comparison - Dataset: {ds}')  # title
+        plt.ylabel('Precision Weighted')  # Y label
+        nombre_archivo = f"{CARPETA_IMG}/boxplot_{ds}.png"  # output path
+        plt.savefig(nombre_archivo, dpi=300)  # save figure
+        print(f"   📊 Plot saved: {nombre_archivo}")  # inform
+        plt.close()  # close figure
 
-    print("\n" + "="*50)  # separador
-    print("🧪 Tests estadísticos (Friedman + Wilcoxon)")  # encabezado tests
-    print("="*50)  # separador
+    print("\n" + "="*50)  # separator
+    print("🧪 Statistical tests (Friedman + Wilcoxon)")  # test header
+    print("="*50)  # separator
 
     for ds in datasets:
-        print(f"\nDataset: {ds.upper()}")  # imprimir dataset
-        df_ds = df[df['Dataset'] == ds]  # filtrar por dataset
+        print(f"\nDataset: {ds.upper()}")  # print dataset
+        df_ds = df[df['Dataset'] == ds]  # filter by dataset
 
         tabla = df_ds.pivot(index='Run_ID', columns='Algorithm', values='Best_Precision')  # pivot table
 
-        vectores = [tabla[algo] for algo in algoritmos]  # vectores por algoritmo
-        _, p_value = friedmanchisquare(*vectores)  # test de Friedman
+        vectores = [tabla[algo] for algo in algoritmos]  # vectors per algorithm
+        _, p_value = friedmanchisquare(*vectores)  # Friedman test
 
-        print(f"  Friedman p-value: {p_value:.2e} ", end="")  # mostrar p-value
+        print(f"  Friedman p-value: {p_value:.2e} ", end="")  # show p-value
         if p_value < 0.05:
-            print("✅ (Diferencias significativas)")  # significativo
-            print("    Comparaciones por pares (Wilcoxon):")  # post-hoc
+            print("✅ (Significant differences)")  # significant
+            print("    Pairwise comparisons (Wilcoxon):")  # post-hoc
             for a1, a2 in itertools.combinations(algoritmos, 2):
-                _, w_p = wilcoxon(tabla[a1], tabla[a2])  # Wilcoxon par a par
-                sig = "⭐" if w_p < 0.05 else "  "  # marcar significancia
-                print(f"    {sig} {a1} vs {a2:<15} | p={w_p:.4f}")  # imprimir comparación
+                _, w_p = wilcoxon(tabla[a1], tabla[a2])  # Wilcoxon pairwise
+                sig = "⭐" if w_p < 0.05 else "  "  # mark significance
+                print(f"    {sig} {a1} vs {a2:<15} | p={w_p:.4f}")  # print comparison
         else:
-            print("❌ (Sin diferencias significativas)")  # no significativo
+            print("❌ (No significant differences)")  # not significant
 
 
 if __name__ == "__main__":
-    analizar_resultados("/home/juanpe/master/practicas/paper_feature_selection/csv/resultados_comparativa_final.csv")  # ejecución por defecto
+    analizar_resultados("/home/juanpe/master/practicas/paper_feature_selection/csv/resultados_comparativa_final.csv")  # default execution
