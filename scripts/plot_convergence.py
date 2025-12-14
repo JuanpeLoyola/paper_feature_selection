@@ -12,7 +12,7 @@ PARAMS_GA = {'pop_size': 110, 'n_gen': 20, 'p_cruce': 0.88, 'p_mutacion': 0.12, 
 
 DATASETS = ['zoo', 'wine', 'lymphography', 'ionosphere', 'breast_cancer']  # datasets
 
-CARPETA_IMG = "imagenes"
+CARPETA_IMG = "images"
 os.makedirs(CARPETA_IMG, exist_ok=True)  # crear carpeta si no existe
 
 # preparar figura en grid

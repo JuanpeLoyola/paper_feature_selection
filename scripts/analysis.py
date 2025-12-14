@@ -21,7 +21,7 @@ def analizar_resultados(archivo_csv):
     algoritmos = df['Algorithm'].unique()  # lista de algoritmos únicos
     print(f"📊 Analizando: {len(datasets)} datasets, {len(algoritmos)} algoritmos\n")  # resumen
 
-    CARPETA_IMG = "imagenes"  # carpeta para guardar imágenes
+    CARPETA_IMG = "images"  # carpeta para guardar imágenes
     os.makedirs(CARPETA_IMG, exist_ok=True)  # crear carpeta si hace falta
 
     for ds in datasets:
@@ -31,7 +31,7 @@ def analizar_resultados(archivo_csv):
         sns.boxplot(x='Algorithm', y='Best_Precision', data=data_subset, palette="Set3")  # boxplot
         sns.swarmplot(x='Algorithm', y='Best_Precision', data=data_subset, color=".25", size=3)  # puntos
 
-        plt.title(f'Precision Comparison - Dataset: {ds}')  # título
+        # plt.title(f'Precision Comparison - Dataset: {ds}')  # título
         plt.ylabel('Precision Weighted')  # etiqueta Y
         nombre_archivo = f"{CARPETA_IMG}/boxplot_{ds}.png"  # ruta salida
         plt.savefig(nombre_archivo, dpi=300)  # guardar figura

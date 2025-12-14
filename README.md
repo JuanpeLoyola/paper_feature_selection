@@ -44,19 +44,29 @@ The repository is organized to ensure experiment reproducibility:
 
 ```text
 .
-├── csv/                   # 📂 Input datasets (UCI) and generated CSV results
-├── imagenes/              # 📊 Generated plots (Pareto fronts, Boxplots)
-├── scripts/               # 🧠 Source code
-│   ├── algorithms.py          # Metaheuristics logic (GA, SA, TS, PSO, GWO)
-│   ├── algorithms_mo.py       # Multi-objective logic (NSGA-II)
-│   ├── analysis.py            # Statistical analysis and visualization
-│   ├── data_loader.py         # Dataset ingestion and cleaning
-│   ├── evaluator.py           # Evaluator Class (Wrapper + Constraints)
-│   ├── main_experiment.py     # Main script (Single-Objective Benchmark)
-│   └── main_multiobjective.py # Secondary script (Pareto Analysis)
-├── pyproject.toml         # ⚙️ Project dependencies
-├── uv.lock                # 🔒 Lock file for dependencies
-└── README.md              # 📄 Documentation
+├── csv/                       # 📂 Generated CSV results and tables
+│   ├── resultados_comparativa_final.csv    # Raw results (30 runs per algorithm/dataset)
+│   ├── tabla_resumen_paper_CI.csv          # Summary table with confidence intervals
+│   ├── resultados_multiobjetivo.csv        # Pareto front solutions
+│   └── tabla_resumen_paper.csv             # Summary statistics table
+├── images/                    # 📊 Generated plots and visualizations
+│   ├── boxplot_*.png              # Boxplots for each dataset
+│   ├── pareto_*.png               # Pareto fronts (Precision vs Recall)
+│   └── convergence_combined.png   # GA convergence curves
+├── scripts/                   # 🧠 Source code
+│   ├── algorithms.py              # Single-objective metaheuristics (GA, SA, Tabu, PSO, GWO)
+│   ├── algorithms_mo.py           # Multi-objective logic (NSGA-II)
+│   ├── analysis.py                # Statistical analysis, tests, and boxplots
+│   ├── data_loader.py             # Dataset loading from OpenML
+│   ├── evaluator.py               # Evaluator Class (Wrapper + Hard Constraints)
+│   ├── generar_tabla_paper.py     # Generate tables with confidence intervals
+│   ├── main_experiment.py         # Main script (Single-Objective Benchmark - 30 runs)
+│   ├── main_multiobjective.py     # NSGA-II Pareto front analysis
+│   ├── plot_convergence.py        # Generate GA convergence plots
+│   └── tuning_optuna.py           # Hyperparameter tuning with Optuna
+├── pyproject.toml             # ⚙️ Project dependencies
+├── uv.lock                    # 🔒 Lock file for dependencies
+└── README.md                  # 📄 Documentation
 
 ```
 
@@ -80,75 +90,118 @@ Five algorithms have been implemented and tuned for the comparison, all sharing 
 
 ## 💻 Installation & Usage
 
-1. Prerequisites
+### 1. Prerequisites
 
-Ensure you have Python 3.12 installed. Install dependencies:
+Ensure you have Python 3.12+ installed. Install dependencies:
 
 ```bash
-
-# Option A: pip
-pip install numpy pandas scikit-learn deap seaborn matplotlib scipy
-
-# Option B: uv (recommended)
+# Option A: Using uv (recommended)
 uv sync
+
+# Option B: Using pip
+pip install numpy pandas scikit-learn deap seaborn matplotlib scipy
 ```
 
-2. Run Comparative Study (Single-Objective)
+### 2. Run Comparative Study (Single-Objective)
 
-This script runs the 5 algorithms across the 5 datasets (10 runs each) and saves the results to a CSV file.
+This script runs the 5 algorithms across the 5 datasets (**30 runs each**) and saves the results to a CSV file.
 
 ```bash
-
-python main_experiment.py
-
+python scripts/main_experiment.py
 ```
-Output: Generates resultados_comparativa_final.csv.
 
-3. Generate Statistical Analysis
+**Output:** Generates `csv/resultados_comparativa_final.csv` (750 total runs: 5 datasets × 5 algorithms × 30 runs).
 
-Once the experiment is finished, run the analysis to generate Boxplots and calculate p-values.
+**Execution time:** ~8-12 hours (depending on hardware).
+
+### 3. Generate Tables with Confidence Intervals
+
+Once the experiment is finished, generate summary tables for the paper:
 
 ```bash
-
-python analysis.py
-
+python scripts/generar_tabla_paper.py
 ```
 
-Output: Displays distribution plots and prints significance tables (Friedman/Wilcoxon) to the console.
+**Output:** Generates `csv/tabla_resumen_paper_CI.csv` with means and 95% confidence intervals.
 
-4. Run Multi-objective Analysis
+### 4. Generate Statistical Analysis
+
+Run the analysis to generate boxplots and significance tests:
+
+```bash
+python scripts/analysis.py
+```
+
+**Output:** 
+- Boxplots saved to `images/boxplot_*.png`
+- Friedman and Wilcoxon test results printed to console
+
+### 5. Run Multi-objective Analysis (NSGA-II)
 
 To generate the Pareto Fronts (Precision vs Recall):
 
 ```bash
-
-python main_multiobjective.py
-
+python scripts/main_multiobjective.py
 ```
 
-Output: Generates pareto_{dataset}.png images in the root folder.
+**Output:** 
+- Pareto front plots: `images/pareto_*.png`
+- Solutions data: `csv/resultados_multiobjetivo.csv`
+
+### 6. Generate Convergence Plots
+
+To visualize GA convergence curves:
+
+```bash
+python scripts/plot_convergence.py
+```
+
+**Output:** `images/convergence_combined.png`
 
 ---
 
 ## ⚙️ Experimental Methodology
 
-The study is conducted on 5 medical/biological datasets from the UCI repository (Breast Cancer, Wine, Ionosphere, Lymphography, Zoo).
+The study is conducted on **5 medical/biological datasets** from OpenML:
+- **Breast Cancer** (Wisconsin Diagnostic)
+- **Wine** (Chemical analysis)
+- **Ionosphere** (Radar returns)
+- **Lymphography** (Lymph node diagnosis)
+- **Zoo** (Animal classification)
 
-**Hard Constraints:** Unlike standard approaches that use soft penalties, this project implements a **"death penalty"** mechanism. If an individual selects fewer than $k_{min}$ or more than $k_{max}$ features, its fitness is immediately reduced to 0.0, forcing the algorithm to search for compact solutions.
+### Hard Constraints
+Unlike standard approaches that use soft penalties, this project implements a **"death penalty"** mechanism. If an individual selects fewer than $k_{min}$ or more than $k_{max}$ features, its fitness is immediately reduced to 0.0, forcing the algorithm to search for compact solutions.
 
-**Validation:** The fitness of each solution is calculated using the mean precision of a Decision Tree with Cross-Validation ($k=5$ folds).
+### Validation
+The fitness of each solution is calculated using:
+- **Model:** Decision Tree Classifier (scikit-learn)
+- **Metric:** Precision (weighted for single-objective, macro for multi-objective)
+- **Validation:** Stratified k-fold Cross-Validation (k=5 or dynamically adjusted)
+- **Penalty coefficient (α):** 0.001 for single-objective (parsimony pressure)
+
+### Statistical Robustness
+- **30 independent runs** per algorithm per dataset
+- **Different random seeds** for each run (42 + run_id)
+- **95% Confidence Intervals** using t-distribution
 
 ---
 
 ## 🎯 Multi-objective Analysis
 
-The NSGA-II algorithm is employed to simultaneously optimize two conflicting objectives:
+The **NSGA-II** algorithm is employed to simultaneously optimize two conflicting objectives:
 
-1. Maximize Precision.
+1. **Maximize Precision (macro):** Minimize false positives across all classes equally
+2. **Maximize Recall (macro):** Minimize false negatives across all classes equally
 
-2. Maximize Sensitivity (Recall).
+This results in a **Pareto Front** of non-dominated solutions, offering the human expert different trade-off options depending on whether they prefer to minimize false positives or false negatives.
 
-This results in a set of non-dominated solutions (Pareto Front), offering the human expert different options depending on whether they prefer to minimize false positives or false negatives.
+### NSGA-II Configuration
+- **Population size (μ):** 300
+- **Generations:** 150
+- **Crossover probability:** 0.6
+- **Mutation probability:** 0.4
+- **Selection:** NSGA-II (non-dominated sorting + crowding distance)
+- **Penalty coefficient:** None (α = 0 for multi-objective)
 
 ---
 
@@ -156,9 +209,20 @@ This results in a set of non-dominated solutions (Pareto Front), offering the hu
 
 The project validates the superiority or equivalence of the algorithms using non-parametric tests:
 
-* Friedman Test: To detect global differences in the algorithms' rankings.
+### Statistical Tests
+- **Friedman Test:** Detects global differences in algorithm rankings across all datasets
+- **Wilcoxon Signed-Rank Test (Post-hoc):** Pairwise comparisons to determine significant differences between specific algorithms
 
-* Wilcoxon Test (Post-hoc): To compare algorithm pairs and determine if the proposed method significantly outperforms classical methods.
+### Outputs
+- **Tables:** Summary statistics with means ± 95% confidence intervals (`csv/tabla_resumen_paper_CI.csv`)
+- **Boxplots:** Distribution visualization for each dataset (`images/boxplot_*.png`)
+- **Pareto Fronts:** Multi-objective trade-off curves (`images/pareto_*.png`)
+- **Convergence Curves:** GA evolution over generations (`images/convergence_combined.png`)
+
+### Key Metrics
+- **Best Precision:** Main fitness metric (weighted average for single-objective)
+- **Number of Features:** Parsimony measure (fewer features preferred)
+- **Execution Time:** Computational efficiency tracking
 
 ---
 

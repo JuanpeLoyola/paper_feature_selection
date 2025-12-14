@@ -24,13 +24,13 @@ CONFIGURACION = {
 
 # experiment configuration
 DATASETS = ['zoo', 'wine', 'lymphography', 'ionosphere', 'breast_cancer']  # datasets a evaluar
-N_EJECUCIONES = 10  # repeticiones por algoritmo
+N_EJECUCIONES = 30  # repeticiones por algoritmo
 
 # mapa de nombre -> función
 ALGORITMOS = {'GA': run_ga, 'SA': run_sa, 'Tabu': run_tabu, 'PSO': run_pso, 'GWO': run_gwo}
 
 resultados = []  # acumulador de resultados
-archivo_salida = "resultados_comparativa_final.csv"  # CSV de salida
+archivo_salida = "csv/resultados_comparativa_final.csv"  # CSV de salida
 
 print(f"🚀 Iniciando experimento: {len(DATASETS)} datasets, {len(ALGORITMOS)} algoritmos, {N_EJECUCIONES} ejecuciones\n")
 
@@ -72,7 +72,8 @@ try:
 
                 start_time = time.time()  # tiempo inicio
 
-                best_sol, best_fit = funcion_algo(evaluador, n_feats, mis_params)  # ejecutar algoritmo
+                resultado = funcion_algo(evaluador, n_feats, mis_params)  # ejecutar algoritmo
+                best_sol, best_fit = resultado[0], resultado[1]  # extraer solución y fitness
 
                 elapsed = time.time() - start_time  # tiempo transcurrido
 

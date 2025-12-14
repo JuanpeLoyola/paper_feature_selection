@@ -15,14 +15,14 @@ warnings.filterwarnings("ignore", category=UserWarning)
 
 DATASETS = ['zoo', 'wine', 'lymphography', 'ionosphere', 'breast_cancer']
 
-PARAMS_NSGA2 = {'pop_size': 100, 'n_gen': 50, 'p_cruce': 0.8, 'p_mutacion': 0.2}
+PARAMS_NSGA2 = {'pop_size': 300, 'n_gen': 150, 'p_cruce': 0.6, 'p_mutacion': 0.4}
 
 resultados_pareto = []
 
 print("🚀 INICIANDO EXPERIMENTO MULTIOBJETIVO (NSGA-II)...")
 print(f"Objetivos: Maximizar Precisión vs Maximizar Recall\n")
 
-CARPETA_IMG = "imagenes"
+CARPETA_IMG = "images"
 os.makedirs(CARPETA_IMG, exist_ok=True)
 
 for ds in DATASETS:
@@ -73,7 +73,7 @@ for ds in DATASETS:
 
     plt.plot([0, 1], [0, 1], ls="--", c=".3", alpha=0.3, label="Equilibrio perfecto")  # línea ideal
 
-    plt.title(f'Pareto Front - {ds.upper()}\n(Precision-Recall Trade-off)', fontsize=14)  # título
+    #plt.title(f'Pareto Front - {ds.upper()}\n(Precision-Recall Trade-off)', fontsize=14)  # título
     plt.xlabel('Precision', fontsize=12)  # etiqueta X
     plt.ylabel('Recall', fontsize=12)  # etiqueta Y
     plt.xlim(0.4, 1.05)  # límites X
