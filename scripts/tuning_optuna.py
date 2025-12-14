@@ -1,7 +1,7 @@
 import optuna
 import numpy as np
-from data_loader import cargar_dataset
-from evaluator import Evaluador
+from data_loader import load_dataset
+from evaluator import Evaluator
 from algorithms import run_ga
 
 DATASET_TUNING = 'ionosphere'  # dataset for tuning
@@ -9,12 +9,12 @@ N_TRIALS = 30  # number of Optuna trials
 
 print(f"🎯 Starting Hyperparameter Tuning with Optuna on '{DATASET_TUNING}'...")
 
-X, y, _ = cargar_dataset(DATASET_TUNING)  # load data once
+X, y, _ = load_dataset(DATASET_TUNING)  # load data once
 n_feats = X.shape[1]  # number of features
 
 k_min = 2  # minimum features included
 k_max = int(n_feats * 0.75)  # maximum features allowed
-evaluador = Evaluador(X, y, k_min, k_max, k_folds=5, alpha=0.001)  # evaluator
+evaluador = Evaluator(X, y, k_min, k_max, k_folds=5, alpha=0.001)  # evaluator
 
 
 def objective(trial):

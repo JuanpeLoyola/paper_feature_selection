@@ -3,8 +3,8 @@ import seaborn as sns
 import pandas as pd
 import numpy as np
 import math
-from data_loader import cargar_dataset
-from evaluator import Evaluador
+from data_loader import load_dataset
+from evaluator import Evaluator
 from algorithms import run_ga
 import os
 
@@ -29,13 +29,13 @@ print(f"🚀 Generating convergence curves for {n_ds} datasets...")
 for i, ds in enumerate(DATASETS):
     print(f"  > Processing {ds}...", end=" ", flush=True)
 
-    X, y, _ = cargar_dataset(ds)  # load dataset
+    X, y, _ = load_dataset(ds)  # load dataset
     n_feats = X.shape[1]  # number of features
 
     min_samples = np.min(np.bincount(y))  # min per class
     k_folds = 5 if min_samples >= 5 else max(2, min_samples)  # adjust folds
 
-    evaluador = Evaluador(X, y, 2, int(n_feats * 0.75), k_folds=k_folds, alpha=0.001)  # create evaluator
+    evaluador = Evaluator(X, y, 2, int(n_feats * 0.75), k_folds=k_folds, alpha=0.001)  # create evaluator
 
     _, _, logbook = run_ga(evaluador, n_feats, PARAMS_GA)  # run GA and get log
 

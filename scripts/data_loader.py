@@ -5,7 +5,7 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.impute import SimpleImputer  
 
 
-def cargar_dataset(nombre):
+def load_dataset(nombre):
     """Load and preprocess a dataset from OpenML."""
     print(f"📥 Loading dataset: {nombre}...")  # indicate start
 

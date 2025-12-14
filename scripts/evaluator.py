@@ -3,7 +3,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import cross_val_score  
 
 
-class Evaluador:
+class Evaluator:
     """Evaluates feature selection masks via CV."""
 
     def __init__(self, X, y, k_min, k_max, k_folds=5, alpha=0.0):

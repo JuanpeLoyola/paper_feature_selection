@@ -2,8 +2,8 @@ import pandas as pd
 import numpy as np  
 import time  
 import sys  
-from data_loader import cargar_dataset 
-from evaluator import Evaluador  
+from data_loader import load_dataset 
+from evaluator import Evaluator  
 from algorithms import run_ga, run_sa, run_tabu, run_pso, run_gwo  
 import warnings 
 from sklearn.exceptions import UndefinedMetricWarning  
@@ -39,7 +39,7 @@ ALPHA = 0.001  # penalty for number of features
 try:
     for ds in DATASETS:  # iterate datasets
         try:
-            X, y, feat_names = cargar_dataset(ds)  # load data
+            X, y, feat_names = load_dataset(ds)  # load data
         except Exception as e:
             print(f"❌ Error loading {ds}: {e}")  # if fails, skip
             continue
@@ -56,7 +56,7 @@ try:
 
         k_min = 2  # minimum selectable features
         k_max = int(n_feats * 0.75) if n_feats > 5 else n_feats  # maximum allowed
-        evaluador = Evaluador(X, y, k_min, k_max, k_folds=k_folds_dinamico, alpha=ALPHA)  # create evaluator
+        evaluador = Evaluator(X, y, k_min, k_max, k_folds=k_folds_dinamico, alpha=ALPHA)  # create evaluator
 
         print(f"\n📂 Dataset: {ds} (Features: {n_feats})")
         print("-" * 40)

@@ -6,8 +6,8 @@ import warnings
 from sklearn.exceptions import UndefinedMetricWarning
 import os
 
-from data_loader import cargar_dataset
-from evaluator import Evaluador
+from data_loader import load_dataset
+from evaluator import Evaluator
 from algorithms_mo import run_nsga2
 
 warnings.filterwarnings("ignore", category=UndefinedMetricWarning)
@@ -27,7 +27,7 @@ os.makedirs(CARPETA_IMG, exist_ok=True)
 
 for ds in DATASETS:
     try:
-        X, y, feat_names = cargar_dataset(ds)  # download and preprocess
+        X, y, feat_names = load_dataset(ds)  # download and preprocess
     except Exception as e:
         print(f"❌ Error loading {ds}: {e}")
         continue
@@ -44,7 +44,7 @@ for ds in DATASETS:
     k_min = 2  # minimum features
     k_max = int(n_feats * 0.75) if n_feats > 5 else n_feats  # maximum features
 
-    evaluador = Evaluador(X, y, k_min, k_max, k_folds=k_folds_dinamico)  # create evaluator
+    evaluador = Evaluator(X, y, k_min, k_max, k_folds=k_folds_dinamico)  # create evaluator
     pareto_front, log = run_nsga2(evaluador, n_feats, PARAMS_NSGA2)  # run NSGA-II
 
     print(f"✅ Pareto Front: {len(pareto_front)} solutions.")
